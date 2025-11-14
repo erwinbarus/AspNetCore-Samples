@@ -1,0 +1,8 @@
+masba.local
+7WRPIZyyRjbtApEP
+
+Import-Module ActiveDirectory; 
+Get-Module -ListAvailable ActiveDirectory
+Get-ADUser -Identity Administrator | Select-Object DistinguishedName
+
+

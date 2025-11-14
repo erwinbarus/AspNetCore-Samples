@@ -1,0 +1,17 @@
+syntax = 'proto3';
+
+option csharp_namespace = "GrpcService";
+
+package calculator;
+
+service Calculator {
+  rpc MakeDouble (CalculatorRequest) returns (CalculatorResponse);
+}
+
+message CalculatorRequest {
+  int32 value = 1;
+}
+
+message CalculatorResponse {
+  int32 value = 1;
+}

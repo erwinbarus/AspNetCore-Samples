@@ -1,0 +1,6 @@
+@TcpTestApi_HostAddress = http://localhost:5129
+
+GET {{TcpTestApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

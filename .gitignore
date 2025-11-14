@@ -1,0 +1,129 @@
+############################
+# OS / Editor
+############################
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# VSCode
+.vscode/
+.history/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.cache
+*.userprefs
+*.orig
+
+############################
+# Node / JS / TS Projects
+############################
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Logs
+logs/
+*.log
+*.out
+*.err
+
+# Env
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.production.local
+.env.test.local
+
+############################
+# Build Outputs
+############################
+dist/
+build/
+out/
+.next/
+.next_cache/
+.cache/
+coverage/
+*.tsbuildinfo
+
+############################
+# Next.js Specific
+############################
+.next/
+.vercel/
+server/
+serverless/
+generated/
+
+############################
+# React (CRA) Specific
+############################
+# Production build
+build/
+
+# Testing
+coverage/
+
+# ESLint cache
+.eslintcache
+
+############################
+# ASP.NET Core (.NET) 
+############################
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+*.cache
+*.log
+*.so
+*.db
+*.mdf
+*.ldf
+*.jfm
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# ASP.NET Core Publish Folders
+wwwroot/dist/
+wwwroot/lib/
+publish/
+Published/
+
+# User Secrets
+**/secrets.json
+
+############################
+# Rider / JetBrains
+############################
+.idea/
+*.sln.iml
+
+############################
+# Misc
+############################
+*.tmp
+*.swp
+*.bak
+*.orig
+*.rej
+*.lock

@@ -1,0 +1,101 @@
+using Novell.Directory.Ldap;
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+ 
+public class LdapGroupMembership
+{
+    public static List<string> GetGroupMembers(string ldapHost, int ldapPort, string bindDn, string bindPassword, string searchBase, string groupName)
+    {
+        List<string> members = new List<string>();
+        LdapConnection conn = new LdapConnection();
+ 
+        try
+        {
+            conn.Connect(ldapHost, ldapPort);
+            conn.Bind(bindDn, bindPassword);
+ 
+            // Construct the LDAP filter to find the group
+            string groupFilter = $"(cn={groupName})";
+ 
+            // Search for the group
+            LdapSearchQueue searchQueue = conn.Search(
+                searchBase,
+                LdapConnection.SCOPE_SUB,
+                groupFilter,
+                new string[] { "member" }, // Request the 'member' attribute
+                false,
+                null as LdapSearchQueue
+            );
+ 
+            LdapMessage message;
+            while ((message = searchQueue.getResponse()) != null)
+            {
+                if (message is LdapSearchResult searchResult)
+                {
+                    LdapEntry entry = searchResult.Entry;
+                    LdapAttribute memberAttribute = entry.getAttribute("member");
+ 
+                    if (memberAttribute != null)
+                    {
+                        foreach (string memberDn in memberAttribute.StringValueArray)
+                        {
+                            // Extract the CN (Common Name) from the member's Distinguished Name
+                            Match match = Regex.Match(memberDn, "^CN=([^,]*),");
+                            if (match.Success)
+                            {
+                                members.Add(match.Groups[1].Value);
+                            }
+                            else
+                            {
+                                members.Add(memberDn); // Add full DN if CN extraction fails
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch (LdapException e)
+        {
+            Console.WriteLine($"LDAP Error: {e.Message}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"General Error: {e.Message}");
+        }
+        finally
+        {
+            if (conn.Connected)
+            {
+                conn.Disconnect();
+            }
+        }
+        return members;
+    }
+ 
+    public static void Main(string[] args)
+    {
+        // Replace with your actual LDAP server details
+        string ldapHost = "your_ldap_server.com";
+        int ldapPort = 389; // or 636 for LDAPS
+        string bindDn = "cn=AdminUser,cn=Users,dc=yourdomain,dc=com"; // User with read access
+        string bindPassword = "AdminPassword";
+        string searchBase = "dc=yourdomain,dc=com"; // Base DN for your AD
+        string targetGroupName = "YourADGroup";
+ 
+        List<string> groupMembers = GetGroupMembers(ldapHost, ldapPort, bindDn, bindPassword, searchBase, targetGroupName);
+ 
+        if (groupMembers.Count > 0)
+        {
+            Console.WriteLine($"Members of group '{targetGroupName}':");
+            foreach (string member in groupMembers)
+            {
+                Console.WriteLine($"- {member}");
+            }
+        }
+        else
+        {
+            Console.WriteLine($"Group '{targetGroupName}' not found or has no members.");
+        }
+    }
+}
