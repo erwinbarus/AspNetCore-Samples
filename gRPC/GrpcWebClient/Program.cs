@@ -1,11 +1,5 @@
-using Google.Rpc;
-using Grpc.Core;
-using Grpc.Core.Interceptors;
-using Grpc.Net.Client;
+using Endpoints.GrpcEndpoints;
 using Grpc.Net.Client.Balancer;
-using Grpc.Net.Client.Configuration;
-using Grpc.Net.Client.Web;
-using GrpcService;
 using GrpcWebClient;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,94 +36,6 @@ app.MapGet("/", () =>
     return "Ok";
 });
 
-app.MapGet("/{name}", async (string name) =>
-{
-    try
-    {
-        using var channel = GrpcChannel.ForAddress("http://localhost:5048");
-        var invoker = channel.Intercept(new ClientLoggingInterceptor());
-
-        var client = new Greeter.GreeterClient(invoker);
-        var reply = await client.SayHelloAsync(new HelloRequest { Name = name });
-        Console.WriteLine("Greeting: " + reply.Message);
-        return "Successful";
-    }
-    catch (RpcException ex)
-    {
-        Console.WriteLine($"Server error: {ex.Status.Detail}");
-        var badRequest = ex.GetRpcStatus()?.GetDetail<BadRequest>();
-        if (badRequest != null)
-        {
-            foreach (var fieldViolation in badRequest.FieldViolations)
-            {
-                Console.WriteLine($"Field: {fieldViolation.Field}");
-                Console.WriteLine($"Description: {fieldViolation.Description}");
-            }
-        }
-        return "Error";
-    }
-});
-
-app.MapGet("/static/{name}", async (string name) =>
-{
-    using var channel = GrpcChannel.ForAddress(
-        "static:my-example-dns",
-        new GrpcChannelOptions
-        {
-            Credentials = ChannelCredentials.Insecure,
-            ServiceProvider = app.Services.GetRequiredService<IServiceProvider>(),
-            ServiceConfig = new ServiceConfig { LoadBalancingConfigs = { new PickFirstConfig() } }
-        });
-    var client = new Greeter.GreeterClient(channel);
-    var reply = await client.SayHelloAsync(new HelloRequest { Name = name });
-
-    return "Successful";
-});
-
-app.MapGet("/file/{name}", async (string name) =>
-{
-    using var channel = GrpcChannel.ForAddress(
-        "file:///Projects/Training/ASP.NET%20Core%20documentation/GrpcWebClient/servers.json",
-        new GrpcChannelOptions
-        {
-            Credentials = ChannelCredentials.Insecure,
-            ServiceProvider = app.Services.GetRequiredService<IServiceProvider>(),
-            ServiceConfig = new ServiceConfig { LoadBalancingConfigs = { new PickFirstConfig() } }
-        });
-    var client = new Greeter.GreeterClient(channel);
-    var reply = await client.SayHelloAsync(new HelloRequest { Name = name });
-
-    return "Successful";
-});
-
-app.MapGet("/random/balancer/{name}", async (string name) =>
-{
-    using var channel = GrpcChannel.ForAddress(
-        "static:my-example-dns",
-        new GrpcChannelOptions
-        {
-            Credentials = ChannelCredentials.Insecure,
-            ServiceProvider = app.Services.GetRequiredService<IServiceProvider>(),
-            ServiceConfig = new ServiceConfig { LoadBalancingConfigs = { new LoadBalancingConfig("random") } }
-        });
-    var client = new Greeter.GreeterClient(channel);
-    var reply = await client.SayHelloAsync(new HelloRequest { Name = name });
-
-    return "Successful";
-});
-
-app.MapGet("/grpc/web/{name}", async (string name) =>
-{
-    using var channel = GrpcChannel.ForAddress(
-        "http://localhost:5212",
-        new GrpcChannelOptions
-        {
-            HttpHandler = new GrpcWebHandler(new HttpClientHandler())
-        });
-    var client = new Greeter.GreeterClient(channel);
-    var reply = await client.SayHelloAsync(new HelloRequest { Name = name });
-
-    return "Successful";
-});
+GrpcEndpoints.Map(app);
 
 app.Run();
