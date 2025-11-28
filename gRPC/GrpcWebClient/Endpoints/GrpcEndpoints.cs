@@ -1,6 +1,7 @@
 using Google.Rpc;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
+using Grpc.Health.V1;
 using Grpc.Net.Client;
 using Grpc.Net.Client.Configuration;
 using Grpc.Net.Client.Web;
@@ -114,6 +115,17 @@ public static class GrpcEndpoints
             var reply = await client.SayHelloAsync(new HelloRequest { Name = name });
 
             return "Successful";
+        });
+
+        app.MapGet("/grpc/health/check", async () =>
+        {
+            var channel = GrpcChannel.ForAddress("http://localhost:5212");
+            var client = new Health.HealthClient(channel);
+
+            var response = await client.CheckAsync(new HealthCheckRequest());
+            var status = response.Status;
+            
+            return status.ToString();
         });
     }
 }

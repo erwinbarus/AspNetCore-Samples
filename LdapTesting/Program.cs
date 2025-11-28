@@ -8,10 +8,16 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        string ldapHost = "108.136.163.238";        // Your LDAP server hostname or IP
-        int ldapPort = 389;                      // LDAP default port (use 636 for LDAPS)
+        //string ldapHost = "108.136.163.238";        // Your LDAP server hostname or IP
+        //int ldapPort = 389;                      // LDAP default port (use 636 for LDAPS)
         string loginDN = "CN=Administrator,CN=Users,DC=masba,DC=local";  // Bind DN (adjust if needed)
-        string password = ".BSwtVlDxI*?;rhX6qKWouprzNt;TtyK";    // Bind password
+        //string password = ".BSwtVlDxI*?;rhX6qKWouprzNt;TtyK";    // Bind password
+        //string userId = "erwin.barus";           // The sAMAccountName or uid you want to search
+
+        string ldapHost = "52.74.78.62";        // Your LDAP server hostname or IP
+        int ldapPort = 389;                      // LDAP default port (use 636 for LDAPS)
+        //string loginDN = "developer/xtremax.infra";  // Bind DN (adjust if needed)
+        string password = "Tgif123";    // Bind password
         string userId = "erwin.barus";           // The sAMAccountName or uid you want to search
 
         foreach (var role in await GetUserGroups(ldapHost, loginDN, password, userId))
@@ -47,7 +53,7 @@ class Program
             string[] attributesToReturn = { "memberOf" };
 
             LdapSearchQueue searchQueue = await ldapConn.SearchAsync(
-                searchBase,
+                loginDN,
                 LdapConnection.ScopeSub,
                 searchFilter,
                 attributesToReturn,

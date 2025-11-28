@@ -1,4 +1,5 @@
 using GrpcService.Services;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace GrpcService;
 
@@ -20,6 +21,8 @@ public class Program
             });
         });
         builder.Services.AddGrpc().AddJsonTranscoding();
+        builder.Services.AddGrpcHealthChecks()
+                .AddCheck("Sample", () => HealthCheckResult.Healthy());
 
         var app = builder.Build();
 
@@ -29,6 +32,8 @@ public class Program
 
         app.MapGrpcService<GreeterService>().EnableGrpcWeb();
         app.MapGrpcService<CalculatorService>();
+        app.MapGrpcHealthChecksService().AllowAnonymous(); ;
+
         app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
 
         app.Run();
